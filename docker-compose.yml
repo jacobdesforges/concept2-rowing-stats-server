@@ -1,0 +1,39 @@
+services:
+  erg-backend:
+    image: python:3.11-slim
+    env_file: .env
+    container_name: erg-fridge-display-backend
+    restart: unless-stopped
+    user: "1000:1000"
+    volumes:
+      - ./app:/app
+      - ./data:/data
+      - ./www:/www
+    environment:
+      - CONCEPT2_API_KEY=${CONCEPT2_API_KEY}
+      - PYTHONUNBUFFERED=1
+      # Tells pip and python to use your mounted writable /tmp space for libraries: allows library install without giving container root
+      - PIP_CACHE_DIR=/tmp/pip-cache
+      - PYTHONUSERBASE=/tmp/python-packages
+    command: >
+      sh -c "pip install requests && 
+             echo 'Container ready.' && 
+             tail -f /dev/null"
+
+# Nginx sidecar dedicated to the rowing stats file
+  erg-stats-server:
+    image: nginx:alpine
+    container_name: erg-stats-server
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    volumes:
+      - ./www:/usr/share/nginx/html:ro
+    # Delete everything below this point if you don't care to use Docker networking for Uptime Kuma monitoring or similar
+    networks:
+      - hook-monitor
+
+networks:
+  hook-monitor:
+    name: ${DOCKER_NETWORK_NAME}
+    external: ${DOCKER_NETWORK_EXTERNAL}

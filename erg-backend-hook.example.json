@@ -1,0 +1,27 @@
+[
+  {
+    "id": "update-stats",
+    "execute-command": "/usr/bin/docker",
+    "command-working-directory": "/PATH/TO/YOUR/DOCKER_FOLDER/erg-fridge-display-backend",
+    "include-command-output-in-response": true,
+    "pass-arguments-to-command":
+    [
+      {
+        "source": "string",
+        "name": "exec"
+      },
+      { 
+        "source": "string",
+        "name": "erg-fridge-display-backend"
+      },
+      { 
+        "source": "string",
+        "name": "python3"
+      },
+      { 
+        "source": "string",
+        "name": "/app/fetch_c2.py"
+      }
+    ]
+  }
+]

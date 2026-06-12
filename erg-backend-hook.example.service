@@ -1,0 +1,19 @@
+[Unit]
+Description=ESP32 Erg Fridge Display Webhook Service
+After=network.target
+
+[Service]
+Type=simple
+# Replace with your local $user
+User=LOCAL_USER
+# Point to the project root directory
+WorkingDirectory=/PATH/TO/YOUR/DOCKER_FOLDER/erg-fridge-display-backend
+# Replace /usr/bin/webhook with the output of `which webhook' if different
+ExecStart=/usr/bin/webhook -hooks erg-backend-hook.json -verbose -port=8080
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+
