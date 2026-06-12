@@ -20,8 +20,8 @@ Setting up as instructed will grant read-only access to your Concept2 Logbook da
 
 The script will work from oldest to newest in the workout history to build a PR history. Note that PRs are only triggered for the following workouts:
 
-- Timed PR for exact distance matches for the following distances: 1k, 2k, 5k, 10k meters
-- Distance PR for exact time matches for the following timed workouts: 30 minutes, 1 hour
+- Timed PR for **exact distance matches** for the following distances: 1k, 2k, 5k, 10k meters
+- Distance PR for **exact time matches** for the following timed workouts: 30 minutes, 1 hour
 
 Interval workouts will not trigger a PR, e.g. a 10 x 500m interval workout will add 5000 meters (plus rest meters, if applicable) to your lifetime/season meters, but it will not touch your 5k PR.
 
@@ -38,20 +38,26 @@ The time strings are fuzzy so things like "30min", "30 min", "30 mins", "30 minu
 
 ### Setting Up the Backend to Pull from Concept2 API
 1. For the easiest configuration, clone this repo to a folder named 'erg-fridge-display-backend' while in your server's Docker project folder:
-   `git clone https://github.com/jacobdesforges/concept2-rowing-stats-server.git erg-fridge-display-backend`
+   ```
+   git clone https://github.com/jacobdesforges/concept2-rowing-stats-server.git erg-fridge-display-backend
+   ```
 2. Rename .env.example to .env. Follow the instructions in .env to obtain and set your Concept2 API key and set up your local networking config.
 3. Compose up the project.
 4. While in the project root folder, run the following to fetch all of your historical Concept2 logbook data and create the local database:
-   `docker exec -it erg-fridge-display-backend python3 /app/fetch_c2.py`
+   ```
+   docker exec -it erg-fridge-display-backend python3 /app/fetch_c2.py
+   ```
 
 ### Serve the stats on your local network as a systemd service
 1. If your server doesn't have it, install the `webhook` package.
-2. systemd requires absolute paths. Run `which webhook` and note the path. Debian returns `/usr/bin/webhook`.
+2. systemd requires absolute paths. Run `which webhook` and note the path. Debian returns `/usr/bin/webhook`
 3. Rename erg-backend-hook.example.json to erg-backend-hook.json, and edit the file.
 4. Modify the "execute-command" line to point to the `which webhook` path. Modify the "command-working-directory" line to point to your project root folder.
 5. Open erg-backend-hook.example.service. Modify the file according to the comments. Copy the entire contents.
 6. Create a new service config file as root, and paste in the contents of erg-backend-hook.example.service:
-   `sudo nano /etc/systemd/system/erg-backend-hook.service`.
+   ```
+   sudo nano /etc/systemd/system/erg-backend-hook.service
+   ```
 7. Reload the systemd manager configuration to recognize the new service, enable it to run on boot, and start it immediately:
    ```
    sudo systemctl daemon-reload
@@ -66,24 +72,26 @@ The time strings are fuzzy so things like "30min", "30 min", "30 mins", "30 minu
 
 ### Upload the sketch to your ESP32
 
-[Assembly instructions for the hardware are on Printables.](https://printables.com/placeholder). 
+[Assembly instructions for the hardware are on Printables](https://printables.com/placeholder). 
 
 1. Plug in the ESP32 via USB-C to your computer.
 2. Discover ESP32 hardware address if it's your only serial device: `ls /dev/ttyUSB* /dev/ttyACM* 2>/dev/null`. Mine is at /dev/ttyACM0.
 3. On Fedora and some other distros, your local user account cannot talk directly to hardware raw data tty nodes unless you are part of the hardware control group.
    Run the following user modification command so your account can execute raw writes over that port without needing root privileges:
-
    `sudo usermod -a -G dialout $USER`
 
    To apply, log out and back in, or run in the active terminal window `newgrp dialout`.
 4. If you don't have arduino-cli, download and install it to your home bin directory:
-   `curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=~/bin sh`
-
+   ```
+   curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=~/bin sh
+   ```
    Ensure it's working with `arduino-cli version`.
 5. If you have multiple serial devices, can run `arduino-cli board list` now to find hardware address. 
 6. Create a fresh config file: `arduino-cli config init`
 7. Append the official ESP32 board manager package URL:
-   `arduino-cli config set board_manager.additional_urls https://espressif.github.io/arduino-esp32/package_esp32_index.json`
+   ```
+   arduino-cli config set board_manager.additional_urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+   ```
 8. Update the index files: `arduino-cli core update-index`
 9. Install the core platform files for ESP32 (this replaces the graphical Board Manager): `arduino-cli core install esp32:esp32`
 10. In the esp32 folder, rename secrets.h.example to secrets.h and change the variables according to the instructions.
