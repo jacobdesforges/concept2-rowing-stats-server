@@ -236,6 +236,8 @@ if __name__ == "__main__":
 
         total_elements = len(all_chronological_workouts)
         
+	# Change as desired for different C2 machine types, script default is to only count RowErg meters
+	# Per C2 API docs, type can be any of: rower, skierg, bike, dynamic, slides, paddle, water, snow. rollerski, multierg
         for index, workout in enumerate(all_chronological_workouts):
             if workout.get("type") != "rower":
                 continue
