@@ -14,6 +14,9 @@
 #include <Fonts/FreeSansBold9pt7b.h>
 #include <Fonts/FreeSans9pt7b.h>
 
+// Adafruit doesn't contain pre-rendered 15pt fonts, retrieved from https://rop.nl/truetype2gfx/ and included in the repo
+#include "FreeSansBold15pt7b.h" 
+
 // --- WiFi Credentials ---
 const char* ssid     = SECRET_SSID;
 const char* password = SECRET_PASSWORD;
@@ -225,15 +228,30 @@ void triggerAndUpdateDisplay() {
     display.setCursor(300 - (w / 2), 30);
     display.print("SEASON METERS");
     
-    // Values (Largest Font 18pt - Centered)
-    display.setFont(&FreeSansBold18pt7b);
-    
+    // Values (Dynamic Font Sizing - Centered)
     const char* lifeStr = doc["lifetime"].as<const char*>();
+    
+    // Drop font size if string is 10 characters or longer (includes comma and 'm' so anything >= 10,000,000m)
+    if (strlen(lifeStr) >= 10) {
+      display.setFont(&FreeSansBold15pt7b);
+    } else {
+      display.setFont(&FreeSansBold18pt7b);
+    }
+    
+    // Calculate bounds using whichever font was selected above
     display.getTextBounds(lifeStr, 0, 0, &x1, &y1, &w, &h);
     display.setCursor(100 - (w / 2), 70);
     display.print(lifeStr);
 
     const char* seasonStr = doc["season"].as<const char*>();
+    
+    // Repeat dynamic sizing for the season side
+    if (strlen(seasonStr) >= 10) {
+      display.setFont(&FreeSansBold15pt7b);
+    } else {
+      display.setFont(&FreeSansBold18pt7b);
+    }
+    
     display.getTextBounds(seasonStr, 0, 0, &x1, &y1, &w, &h);
     display.setCursor(300 - (w / 2), 70);
     display.print(seasonStr);
