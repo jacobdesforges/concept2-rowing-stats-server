@@ -1,14 +1,14 @@
 ## Project Overview
 
-[image placeholder](image.png)
+![E-Ink dashboard example running the software](./assets/finished2.jpg)
 
-This software stack is designed to accompany my [Waveshare 4.2" Magnetic Dashboard model on Printables](printables.com/placeholder), however it may also be useful to those looking to collect and maintain local copies of their Concept2 Logbook data.
+This software stack is designed to accompany my [Waveshare 4.2" Magnetic Dashboard model on Printables](https://www.printables.com/model/1754374-waveshare-42-magnetic-e-ink-dashboard-w-button-par/), however it may also be useful to those looking to collect and maintain local copies of their Concept2 Logbook data.
 
 Once the user adds their Concept2 Logbook API token, the Python script (./app/fetch_c2.py) will:
 
 - Ingest all workouts in the logbook history on first run (and new workouts on subsequent runs), saving them locally at ./data/workout_history_cache.json.
 - Work from oldest to newest to build a Personal Record (PR) history, saving in ./data as .csv files.
-- Count the number of marathons (Concept2 defines a marathon as a fixed distance workout of 42,195 meters).
+- Count the number of marathons (Concept2 defines a marathon as a fixed distance workout of exactly 42,195 meters).
 - Track the user's daily streak, e.g. how many sequential days they have rowed.
 - Parse the user's total lifetime meters rowed, season meters, best PRs, marathons rowed, and streak to a single file at ./www/rowing_stats.json which can be easily served and ingested by the ESP32 used in this project.
 
@@ -72,7 +72,7 @@ The time strings are fuzzy so things like "30min", "30 min", "30 mins", "30 minu
 
 ### Upload the sketch to your ESP32
 
-[Assembly instructions for the hardware are on Printables](https://printables.com/placeholder). 
+[Assembly instructions for the hardware are on Printables](https://www.printables.com/model/1754374-waveshare-42-magnetic-e-ink-dashboard-w-button-par/). 
 
 1. Plug in the ESP32 via USB-C to your computer.
 2. Discover ESP32 hardware address if it's your only serial device: `ls /dev/ttyUSB* /dev/ttyACM* 2>/dev/null`. Mine is at /dev/ttyACM0.
@@ -125,3 +125,11 @@ If you're already running services on these ports, you will have to change them 
 - ./docker-compose.yml
 - erg-backend-hook.service (if you haven't already copied contents to `/etc/systemd/system/erg-backend-hook.service`
 - ./esp32/ErgDisplayBaseline.ino under the // --- Server Configuration --- section
+
+#### I want to use this for Concept2 machines other than the RowErg
+
+Quite simple.The script as writen will ingest *all* Concept2 Logbook data, but only count meters on the standard RowErg. Look in .app/fetch_c2.py for the line `if workout.get("type") != "rower":`, which causes the script to exit the loop if the workout was not performed on the standard RowErg.
+
+[Check the Concept2 Logbook API here for all possible machine types](https://log.concept2.com/developers/documentation/#logbook-users-results-get). Note the Dynamic RowErg and RowErg w/ slides are considered separate machine types.
+
+If things you want to count aren't counting after adjusting the Python script logic, check what's been ingested in ./data/workout_history_cache.json for clues.
