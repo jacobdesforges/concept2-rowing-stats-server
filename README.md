@@ -1,6 +1,8 @@
 ## Project Overview
 
-![E-Ink dashboard example running the software](./assets/finished2.jpg)
+<p align="center">
+<img src="./assets/finished2.jpg" width="50%">
+</p>
 
 This software stack is designed to accompany my [Waveshare 4.2" Magnetic Dashboard model on Printables](https://www.printables.com/model/1754374-waveshare-42-magnetic-e-ink-dashboard-w-button-par/), however it may also be useful to those looking to collect and maintain local copies of their Concept2 Logbook data.
 
